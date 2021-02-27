@@ -1,0 +1,7 @@
+{
+    "user"     : "sonic886",
+    "password" : "rlatmddn52!",
+    "host"     : "music-recommender-db.cpabptw8fwxo.us-east-2.rds.amazonaws.com",
+    "port"     : 3306,
+    "database" : "music_recommender_db"
+}
