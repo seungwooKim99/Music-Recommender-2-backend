@@ -1,4 +1,3 @@
-
 from flask import Flask, jsonify, request
 from sqlalchemy import create_engine, text
 import pymysql
@@ -21,9 +20,7 @@ app = Flask(__name__)
 def index():
     a = db_connector()
     # a = pd.DataFrame(a)
-    print(a.shape)
     testJson = a.to_json(orient='records')
-    print(type(testJson))
     return testJson
 
 if __name__ == "__main__":
