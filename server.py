@@ -4,6 +4,8 @@ import pymysql
 import numpy as np
 import pandas as pd
 import json
+from models.songAnalysisModel import SongAnalysis
+from models.songRecommenderModel import SongRecommender
 
 def db_connector(value):
     with open('database.json') as json_file:
@@ -26,11 +28,26 @@ def index():
 @app.route('/api/musicL', methods=['POST'])
 def post():
     value = request.form['songName']
-    print(value)
+    # print(value)
     result = db_connector(value)
-    print(result)
+    # print(result)
     textJson = result.to_json(orient='records')
     return textJson
+
+@app.route('/api/musicL_', methods=['POST'])
+def post_():
+    value = request.form['songId']
+    print(value)
+    
+    analysis = SongAnalysis(str(value))
+    analysisResult = analysis.ExplaneFeatures()
+
+    recommender = SongRecommender((str(value)))
+    recommendedResult = recommender.get_recommendations()
+
+    print(analysisResult)
+    print(recommendedResult)
+    return value
 
 if __name__ == "__main__":
     #app.run(host="0.0.0.0", port="8000")
