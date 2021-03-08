@@ -35,21 +35,6 @@ def make_sql_IN_syntex(idList):
 def drop_duplicated_id_and_name(data):
     return data.drop_duplicates(['id']).drop_duplicates(['name'])
 
-def merge_responses(recommendedData, analysisData):
-    # analysisData to dict
-    analysisDataElement = dict(zip(range(1, len(analysisData) + 1), analysisData))
-    analysisToDict = analysisDataElement
-    #analysisToDict = {'analysis' : analysisDataElement}
-
-    # recommendedData to dict
-    recommendedData = recommendedData.to_json(orient='records')
-    recommendedResultJson = json.loads(recommendedData)
-    recommendedResultJson.append(analysisToDict)
-
-    # dict to json
-    responseData = json.dumps(recommendedResultJson)
-    return responseData
-
 app = Flask(__name__)
 
 @app.route('/api/musicL')
@@ -65,13 +50,9 @@ def post():
     textJson = result.to_json(orient='records')
     return textJson
 
-@app.route('/api/musicL_', methods=['POST'])
-def post_():
+@app.route('/api/recommend_list', methods=['POST'])
+def handle_recommend_list_post():
     value = request.form['songId']
-    
-    # get analysis data
-    analysis = SongAnalysis(str(value))
-    analysisResult = analysis.ExplaneFeatures()
 
     # get recommend data
     recommender = SongRecommender((str(value)))
@@ -80,9 +61,22 @@ def post_():
     recommendedResult = show_result(sqlStr)
     recommendedResult = drop_duplicated_id_and_name(recommendedResult)
 
-    # merge data
-    responseData = merge_responses(recommendedResult,analysisResult)
-    return responseData
+    # dataframe to json
+    recommendedResult = recommendedResult.to_json(orient='records')
+    return recommendedResult
+
+@app.route('/api/analysis_list', methods=['POST'])
+def handle_analysis_list_post():
+    value = request.form['songId']
+
+    # get analysis data
+    analysis = SongAnalysis(str(value))
+    analysisData = analysis.ExplaneFeatures()
+    analysisDataReuslt = dict(zip(range(1, len(analysisData) + 1), analysisData))
+    analysisDataReuslt = json.dumps(analysisDataReuslt)
+    return analysisDataReuslt
+
+
 
 if __name__ == "__main__":
     #app.run(host="0.0.0.0", port="8000")
